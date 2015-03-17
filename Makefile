@@ -17,6 +17,11 @@ execute.o: execute.c
 
 minishell.o: minishell.c
 	gcc minishell.c $(CFLAGS) 
+# Clean, compile and run.
+test:
+	make clean
+	make
+	./minishell
 
 clean:
 	rm *.o
