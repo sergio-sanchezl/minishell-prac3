@@ -6,6 +6,7 @@
 #include "execute.h"
 #include "free_args.h"
 #include "jobs.h"
+// TO ASK: When background finishes, prompt is printed twice. Why?
 
 //Signal handler (which sigaction act will use):
 void handler(int sig, siginfo_t *siginfo, void *context) {
@@ -14,7 +15,7 @@ void handler(int sig, siginfo_t *siginfo, void *context) {
 
 	// Then, change state of job to finished using jobs_finished:
 	jobs_finished(siginfo->si_pid);
-
+	//printf("-Job %d has finished-\n",siginfo->si_pid);
 }
 
 void execute_external_command(const char *command)
@@ -47,11 +48,11 @@ void execute_external_command(const char *command)
 	else if (pid>0){ // Parent, which will wait for child PID w/ or w/o hang.
 			if(backgr==0){
 				jobs_new(pid,args[0]);
-				waitpid(pid,&status,WNOHANG);
+				waitpid(pid,&status,0);
 				}
 			else{
 				jobs_new(pid,args[0]);
-				waitpid(pid,&status,0);
+				waitpid(pid,&status,WNOHANG);
 				}
 			//if(WIFSIGNALED(status)) printf("Done!\n"); 
 		}
