@@ -29,8 +29,8 @@ void execute_external_command(const char *command)
 	pid_t pid;
 	
 	struct sigaction act;
-	act.sa_sigaction = handler; 			// sa_signation instead of sa_handler
-	act.sa_flags = SA_SIGINFO | SA_RESTART;	// because SA_SIGINFO flag is enabled.
+	act.sa_sigaction = handler; 		
+	act.sa_flags = SA_SIGINFO | SA_RESTART;
 	sigaction(SIGCHLD,&act,NULL); 	// Set SIGCHLD handler routine
 
 	if ((args=parser_command(command,&backgr)) == NULL)
@@ -41,25 +41,25 @@ void execute_external_command(const char *command)
 	pid = fork();
 
 	if(pid==0){  // Child
-		if (execvp(*args,args)<0){
+		if (execvp(*args,args)<0){ // Change child's code.
 			printf("ERROR: execvp failed. \n");
 			exit(1);
 			return;
 		}
 		pid = getpid(); // Get pid of exec'd child process
 	}
-	else if (pid>0){ // Parent, which will wait for child PID w/ or w/o hang.
-			if(backgr==0){
+	else if (pid>0){ // Parent, which will wait for child w/ or w/o hang.
+			if(backgr==0){ // Foreground: will wait with hang.
 				jobs_new(pid,args[0]);
 				waitpid(pid,&status,0);
 				}
-			else{
+			else{ // Will wait without hang so other commands can be run.
 				jobs_new(pid,args[0]);
 				waitpid(pid,&status,WNOHANG);
 				}
 		}
 	else if ( pid < 0 ){
-			printf("ERROR: fork failed");
+			printf("ERROR: fork failed"); // Will likely not happen.
 			return;
 		}
 
