@@ -1,3 +1,7 @@
+/**********************************************
+ * Author: Sergio Sanchez Lopez.              *
+ * Group: 1ºE Grado en Ingenieria Informatica *
+ **********************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -21,6 +25,8 @@ void checkExit(const char * buf){
 	wont close the minishell. For that, I could use strstr to search
 	for the substring "exit", but that way if you type something like
 	 "echo exit", the minishell would close, so I prefer to avoid that.*/
+	// It works if the sequence is something like "echo Hello;exit"
+	// ( no spaces between exit and the semicolon )
 	if(strcmp(buf,"exit") == 0){
 		jobs_free_mem();
 		exit(0);
@@ -38,6 +44,7 @@ int main (int argc, char *argv[])
 		print_prompt();
 		
 		read_command_line(buf);
+		
 		tokenbuf=strtok(buf,";"); // gets substrings separated with token ';'
 
 		while( tokenbuf != NULL ){ // if no substring is found (no more tokens)

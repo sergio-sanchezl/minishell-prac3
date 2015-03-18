@@ -1,3 +1,7 @@
+/***********************************************
+ * Author: Sergio Sanchez Lopez.               *
+ * Group: 1ºE Grado en Ingenieria Informatica. *
+ ***********************************************/
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -6,7 +10,6 @@
 #include "execute.h"
 #include "free_args.h"
 #include "jobs.h"
-// TO ASK: When background finishes, prompt is printed twice. Why?
 
 //Signal handler (which sigaction act will use):
 void handler(int sig, siginfo_t *siginfo, void *context) {
@@ -26,9 +29,9 @@ void execute_external_command(const char *command)
 	pid_t pid;
 	
 	struct sigaction act;
-	act.sa_sigaction = handler; // sa_signation instead of sa_handler
-	act.sa_flags = SA_SIGINFO;	// because SA_SIGINFO flag is enabled.
-	sigaction(SIGCHLD,&act,NULL); // Set SIGCHLD handler routine
+	act.sa_sigaction = handler; 			// sa_signation instead of sa_handler
+	act.sa_flags = SA_SIGINFO | SA_RESTART;	// because SA_SIGINFO flag is enabled.
+	sigaction(SIGCHLD,&act,NULL); 	// Set SIGCHLD handler routine
 
 	if ((args=parser_command(command,&backgr)) == NULL)
 	{
@@ -54,7 +57,6 @@ void execute_external_command(const char *command)
 				jobs_new(pid,args[0]);
 				waitpid(pid,&status,WNOHANG);
 				}
-			//if(WIFSIGNALED(status)) printf("Done!\n"); 
 		}
 	else if ( pid < 0 ){
 			printf("ERROR: fork failed");
